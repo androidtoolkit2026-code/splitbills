@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="seed">#FF2E7D32</color>
+    <color name="splitmate_green">#FF2E7D32</color>
+    <color name="splitmate_green_light">#FF66BB6A</color>
+    <color name="splitmate_red">#FFC62828</color>
+    <color name="splitmate_orange">#FFEF6C00</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+</resources>
