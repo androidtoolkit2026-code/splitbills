@@ -38,6 +38,9 @@ interface ExpenseDao {
     @Query("SELECT * FROM expense_splits WHERE expenseId = :expenseId")
     suspend fun getExpenseSplitsSync(expenseId: String): List<ExpenseSplitEntity>
 
+    @Query("SELECT * FROM expense_splits")
+    fun getAllExpenseSplits(): Flow<List<ExpenseSplitEntity>>
+
     @Query("SELECT * FROM expenses WHERE title LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%'")
     suspend fun searchExpenses(query: String): List<ExpenseEntity>
 

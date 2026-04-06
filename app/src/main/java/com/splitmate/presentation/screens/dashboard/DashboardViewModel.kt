@@ -10,6 +10,7 @@ import com.splitmate.domain.repository.UserRepository
 import com.splitmate.domain.usecase.balance.CalculateBalanceUseCase
 import com.splitmate.domain.usecase.balance.SimplifyDebtsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,6 +56,8 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
+    private var dashboardJob: Job? = null
+
     init {
         loadDashboard()
     }
@@ -65,7 +68,8 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun loadDashboard() {
-        viewModelScope.launch {
+        dashboardJob?.cancel()
+        dashboardJob = viewModelScope.launch {
             try {
                 // Core reactive pipeline: user + groups + all expenses
                 combine(
@@ -83,14 +87,14 @@ class DashboardViewModel @Inject constructor(
                     var totalOwed = 0.0
                     var totalOwedToYou = 0.0
                     val groupBalanceMap = mutableMapOf<String, GroupBalance>()
-                    val allSettlements = mutableListOf<Settlement>()
 
-                    // Fetch settlements per group (one-shot per collect cycle)
+                    // Fetch all settlements in a single query, then group by groupId
+                    val allSettlements = settlementRepository.getAllSettlements()
+                        .firstOrNull() ?: emptyList()
+                    val settlementsByGroup = allSettlements.groupBy { it.groupId }
+
                     for (group in groups) {
-                        val settlements = settlementRepository
-                            .getSettlementsForGroup(group.id)
-                            .firstOrNull() ?: emptyList()
-                        allSettlements += settlements
+                        val settlements = settlementsByGroup[group.id] ?: emptyList()
 
                         val groupExpenses = allExpenses.filter { it.groupId == group.id }
                         val balance = calculateBalanceUseCase(

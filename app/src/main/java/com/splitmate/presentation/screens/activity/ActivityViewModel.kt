@@ -7,7 +7,6 @@ import com.splitmate.domain.model.Settlement
 import com.splitmate.domain.repository.ExpenseRepository
 import com.splitmate.domain.repository.GroupRepository
 import com.splitmate.domain.repository.SettlementRepository
-import com.splitmate.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,8 +33,7 @@ data class ActivityUiState(
 class ActivityViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
-    private val groupRepository: GroupRepository,
-    private val userRepository: UserRepository
+    private val groupRepository: GroupRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ActivityUiState())

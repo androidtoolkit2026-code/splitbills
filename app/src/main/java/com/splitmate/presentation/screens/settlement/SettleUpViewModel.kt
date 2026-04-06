@@ -109,7 +109,7 @@ class SettleUpViewModel @Inject constructor(
                 selectedDebt = if (isDeselect) null else debt,
                 fromUserId   = if (isDeselect) "" else debt.fromUserId,
                 toUserId     = if (isDeselect) "" else debt.toUserId,
-                amount       = if (isDeselect) "" else String.format("%.2f", debt.amount)
+                amount       = if (isDeselect) "" else String.format(java.util.Locale.US, "%.2f", debt.amount)
             )
         }
     }

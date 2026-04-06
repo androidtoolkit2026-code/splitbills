@@ -49,7 +49,7 @@ class GroupDetailViewModel @Inject constructor(
         loadAllUsers()
     }
 
-    fun loadGroupDetail() {
+    private fun loadGroupDetail() {
         viewModelScope.launch {
             try {
                 combine(

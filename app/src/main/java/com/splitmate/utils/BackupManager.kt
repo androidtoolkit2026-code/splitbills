@@ -3,10 +3,10 @@ package com.splitmate.utils
 import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.splitmate.data.local.SplitMateDatabase
 import com.splitmate.data.local.entity.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import java.io.*
 import javax.inject.Inject
@@ -35,12 +35,15 @@ class BackupManager @Inject constructor(
             val expenseDao = database.expenseDao()
             val settlementDao = database.settlementDao()
 
-            // Collect all data synchronously using simple queries
-            // For backup we need suspend-based versions but Flow is reactive
-            // We'll use a simplified approach
             val backup = BackupData(
                 version = 1,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                users = userDao.getAllUsers().firstOrNull() ?: emptyList(),
+                groups = groupDao.getAllGroups().firstOrNull() ?: emptyList(),
+                groupMembers = groupDao.observeAllGroupMembers().firstOrNull() ?: emptyList(),
+                expenses = expenseDao.getAllExpenses().firstOrNull() ?: emptyList(),
+                expenseSplits = expenseDao.getAllExpenseSplits().firstOrNull() ?: emptyList(),
+                settlements = settlementDao.getAllSettlements().firstOrNull() ?: emptyList()
             )
 
             val json = gson.toJson(backup)

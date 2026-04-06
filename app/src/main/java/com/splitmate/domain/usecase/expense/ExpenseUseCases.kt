@@ -20,7 +20,7 @@ class AddExpenseUseCase @Inject constructor(
             val splitSum = splits.sumOf { it.amount }
             val tolerance = 0.02
             require(kotlin.math.abs(splitSum - expense.amount) < tolerance) {
-                "Split total (${String.format("%.2f", splitSum)}) must equal expense amount (${String.format("%.2f", expense.amount)})"
+                "Split total (${String.format(java.util.Locale.US, "%.2f", splitSum)}) must equal expense amount (${String.format(java.util.Locale.US, "%.2f", expense.amount)})"
             }
 
             expenseRepository.createExpense(expense, splits)
@@ -133,21 +133,22 @@ class ValidateExpenseSplitsUseCase @Inject constructor() {
         selectedMembers: List<String>,
         splitType: SplitType,
         exactAmounts: Map<String, Double>,
-        percentages: Map<String, Double>
+        percentages: Map<String, Double>,
+        currencySymbol: String = "₹"
     ): ValidationResult {
         if (selectedMembers.isEmpty()) return ValidationResult(false, "Select at least one member")
         if (totalAmount <= 0) return ValidationResult(false, "Enter a valid amount")
 
         return when (splitType) {
-            SplitType.EQUAL -> ValidationResult(true, "Each pays ${String.format("%.2f", totalAmount / selectedMembers.size)}")
+            SplitType.EQUAL -> ValidationResult(true, "Each pays ${String.format(java.util.Locale.US, "%.2f", totalAmount / selectedMembers.size)}")
 
             SplitType.EXACT -> {
                 val assigned = selectedMembers.sumOf { exactAmounts[it] ?: 0.0 }
                 val remaining = Math.round((totalAmount - assigned) * 100.0) / 100.0
                 when {
-                    remaining > 0.01 -> ValidationResult(false, "₹${String.format("%.2f", remaining)} remaining to assign", remainingAmount = remaining)
-                    remaining < -0.01 -> ValidationResult(false, "Over by ₹${String.format("%.2f", -remaining)}", remainingAmount = remaining)
-                    else -> ValidationResult(true, "All ₹${String.format("%.2f", totalAmount)} assigned")
+                    remaining > 0.01 -> ValidationResult(false, "$currencySymbol${String.format(java.util.Locale.US, "%.2f", remaining)} remaining to assign", remainingAmount = remaining)
+                    remaining < -0.01 -> ValidationResult(false, "Over by $currencySymbol${String.format(java.util.Locale.US, "%.2f", -remaining)}", remainingAmount = remaining)
+                    else -> ValidationResult(true, "All $currencySymbol${String.format(java.util.Locale.US, "%.2f", totalAmount)} assigned")
                 }
             }
 
@@ -155,8 +156,8 @@ class ValidateExpenseSplitsUseCase @Inject constructor() {
                 val assigned = selectedMembers.sumOf { percentages[it] ?: 0.0 }
                 val remaining = Math.round((100.0 - assigned) * 100.0) / 100.0
                 when {
-                    remaining > 0.01 -> ValidationResult(false, "${String.format("%.1f", remaining)}% remaining to assign", remainingPercentage = remaining)
-                    remaining < -0.01 -> ValidationResult(false, "Over by ${String.format("%.1f", -remaining)}%", remainingPercentage = remaining)
+                    remaining > 0.01 -> ValidationResult(false, "${String.format(java.util.Locale.US, "%.1f", remaining)}% remaining to assign", remainingPercentage = remaining)
+                    remaining < -0.01 -> ValidationResult(false, "Over by ${String.format(java.util.Locale.US, "%.1f", -remaining)}%", remainingPercentage = remaining)
                     else -> ValidationResult(true, "100% assigned")
                 }
             }

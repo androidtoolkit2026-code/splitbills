@@ -20,38 +20,10 @@ data class DebtTransaction(
     val amount: Double
 )
 
-/** Backward-compatible alias kept for existing call sites. */
-typealias DebtSimplification = DebtTransaction
-
 data class GroupBalance(
     val groupId: String,
     val groupName: String,
     val balances: List<Balance>,
-    val simplifiedDebts: List<DebtSimplification>,
+    val simplifiedDebts: List<DebtTransaction>,
     val totalExpenses: Double
 )
-
-data class DashboardSummary(
-    val totalOwed: Double,
-    val totalOwedToYou: Double,
-    val netBalance: Double,
-    val groupSummaries: List<GroupBalance>,
-    val recentActivities: List<ActivityItem>
-)
-
-data class ActivityItem(
-    val id: String,
-    val type: ActivityType,
-    val title: String,
-    val description: String,
-    val amount: Double,
-    val currency: String,
-    val groupId: String,
-    val groupName: String,
-    val date: Long
-)
-
-enum class ActivityType {
-    EXPENSE_ADDED, EXPENSE_UPDATED, EXPENSE_DELETED,
-    SETTLEMENT, GROUP_CREATED, MEMBER_ADDED
-}

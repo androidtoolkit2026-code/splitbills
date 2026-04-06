@@ -60,12 +60,16 @@ class AddExpenseViewModel @Inject constructor(
                     val (selectedMembers, exactAmounts, percentages) = rest
                     val amount = amountStr.toDoubleOrNull() ?: 0.0
                     if (amount > 0 && selectedMembers.isNotEmpty()) {
+                        val currency = com.splitmate.domain.model.Currency.fromCode(
+                            _uiState.value.group?.currency ?: "INR"
+                        )
                         val validation = validateExpenseSplitsUseCase(
                             totalAmount = amount,
                             selectedMembers = selectedMembers,
                             splitType = splitType,
                             exactAmounts = exactAmounts.mapValues { it.value.toDoubleOrNull() ?: 0.0 },
-                            percentages = percentages.mapValues { it.value.toDoubleOrNull() ?: 0.0 }
+                            percentages = percentages.mapValues { it.value.toDoubleOrNull() ?: 0.0 },
+                            currencySymbol = currency.symbol
                         )
                         _uiState.update { it.copy(splitValidation = validation) }
                     } else {

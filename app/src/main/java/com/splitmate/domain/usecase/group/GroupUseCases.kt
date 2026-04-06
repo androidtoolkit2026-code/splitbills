@@ -2,7 +2,6 @@ package com.splitmate.domain.usecase.group
 
 import com.splitmate.domain.model.Group
 import com.splitmate.domain.repository.GroupRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CreateGroupUseCase @Inject constructor(
@@ -17,16 +16,4 @@ class CreateGroupUseCase @Inject constructor(
             Result.failure(e)
         }
     }
-}
-
-class GetGroupsUseCase @Inject constructor(
-    private val groupRepository: GroupRepository
-) {
-    operator fun invoke(): Flow<List<Group>> = groupRepository.getAllGroups()
-}
-
-class GetGroupDetailUseCase @Inject constructor(
-    private val groupRepository: GroupRepository
-) {
-    operator fun invoke(groupId: String): Flow<Group?> = groupRepository.getGroupById(groupId)
 }
